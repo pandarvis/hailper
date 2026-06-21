@@ -15,7 +15,7 @@ class ConsoleTrigger:
 
 
 class EvdevTrigger:
-    """Blocks until the configured key (default Space) is pressed (Linux)."""
+    """Blocks until the configured key (default Right Ctrl) is pressed (Linux)."""
 
     def __init__(self, key_name: str = "KEY_SPACE"):
         self.key_name = key_name

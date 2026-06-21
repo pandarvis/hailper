@@ -12,7 +12,7 @@ fetch_count = 5
 
 [audio]
 whisper_model = "base"        # base | tiny | small
-trigger_key = "KEY_SPACE"
+trigger_key = "KEY_RIGHTCTRL"  # Ctrl droit : coin du clavier, jamais utilise, repérable au toucher
 tts_voice = "fr_FR-siwis-medium"
 tts_rate = 1.0
 

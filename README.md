@@ -1,18 +1,26 @@
 # Hailper
 
-Assistant vocal pour une personne malvoyante et malentendante : écoute de la musique YouTube sans navigateur, gestion de favoris vocaux, récapitulatif des mails Orange, déclenchement par la touche Espace, réponses lues à voix haute par le système.
+Assistant vocal pour une personne malvoyante et malentendante : écoute de la musique YouTube sans navigateur, gestion de favoris vocaux, récapitulatif des mails Orange, déclenchement par un seul bouton (le **Ctrl droit** par défaut), réponses lues à voix haute par le système.
 
 ---
 
 ## Fonctionnement
 
-1. L'utilisateur appuie sur la **touche Espace** (capturée directement via `evdev`, sans interface graphique).
+1. L'utilisateur appuie sur **un seul bouton** — par défaut le **Ctrl droit** (capturé via `evdev`, sans interface graphique).
 2. Un bip de confirmation retentit, puis Hailper **enregistre la commande vocale** et la transcrit localement avec **Whisper**.
 3. La transcription est envoyée au **cerveau Claude Haiku** (API Anthropic), qui choisit l'action à effectuer.
 4. L'action est exécutée (lecture YouTube via `yt-dlp` + `mpv`, gestion des favoris, lecture des mails via IMAP, contrôle du volume…).
 5. La réponse est lue à voix haute par **Piper TTS**, en français.
 
 Seul service payant : **l'API Anthropic** (Claude Haiku, coût très faible à l'usage).
+
+### Le bouton déclencheur
+
+Un **seul** bouton sert à parler ; **tout le reste** (pause, volume, suivant, favoris…) se fait **à la voix** — c'est le LLM qui écoute et obéit.
+
+Par défaut c'est le **Ctrl droit** (`KEY_RIGHTCTRL`) : un coin du clavier, donc repérable au toucher pour une personne malvoyante, jamais utilisé pour écrire, et sans conflit avec un raccourci du bureau. Pour changer, modifier `trigger_key` dans `config.toml` (n'importe quel nom de touche `evdev`, ex. `KEY_MENU`, `KEY_SCROLLLOCK`).
+
+💡 Coller une **pastille tactile** sur la touche choisie permet de la retrouver instantanément au doigt.
 
 ---
 
@@ -104,9 +112,9 @@ cp ~/hailper/config.example.toml ~/.hailper/config.toml
 - `orange_app_password` (section `[secrets]`) : le **mot de passe pour applications** Orange (à générer depuis l'espace client Orange — différent du mot de passe de connexion habituel). Serveur IMAP : `imap.orange.fr:993` (déjà renseigné dans la section `[mail]`).
 - `tts_voice` (section `[audio]`) : chemin vers le fichier `.onnx` Piper (voir étape 2).
 
-### 5. Accès à la touche Espace (groupe `input`)
+### 5. Accès à la touche déclencheur (groupe `input`)
 
-Pour capturer la touche Espace sans être root :
+Pour capturer la touche déclencheur sans être root :
 
 ```bash
 sudo usermod -aG input $USER
@@ -140,7 +148,7 @@ journalctl --user -u hailper -f
 
 ## Commandes vocales
 
-Exemples de commandes que l'on peut prononcer après avoir appuyé sur la touche Espace :
+Exemples de commandes que l'on peut prononcer après avoir appuyé sur le bouton (Ctrl droit par défaut) :
 
 | Commande | Effet |
 |---|---|

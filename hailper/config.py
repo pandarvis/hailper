@@ -15,7 +15,7 @@ class Config:
     imap_port: int = 993
     mail_fetch_count: int = 5
     whisper_model: str = "base"
-    trigger_key: str = "KEY_SPACE"
+    trigger_key: str = "KEY_RIGHTCTRL"
     tts_voice: str = "fr_FR-siwis-medium"
     tts_rate: float = 1.0
     model: str = "claude-haiku-4-5-20251001"
@@ -43,7 +43,7 @@ class Config:
             imap_port=int(mail.get("imap_port", 993)),
             mail_fetch_count=int(mail.get("fetch_count", 5)),
             whisper_model=audio.get("whisper_model", "base"),
-            trigger_key=audio.get("trigger_key", "KEY_SPACE"),
+            trigger_key=audio.get("trigger_key", "KEY_RIGHTCTRL"),
             tts_voice=audio.get("tts_voice", "fr_FR-siwis-medium"),
             tts_rate=float(audio.get("tts_rate", 1.0)),
             model=general.get("model", "claude-haiku-4-5-20251001"),
