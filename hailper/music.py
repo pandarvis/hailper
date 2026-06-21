@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
 import socket
 import subprocess
+import sys
 import time
 from datetime import datetime
 from typing import Optional, Protocol
@@ -94,13 +96,17 @@ class MpvPlayer:
     def _ensure_running(self) -> None:
         if self._proc and self._proc.poll() is None:
             return
-        self._proc = subprocess.Popen(
-            [
-                "mpv", "--idle=yes", "--no-video", "--no-terminal",
-                f"--input-ipc-server={self.socket_path}",
-                f"--volume={self.volume}",
-            ]
-        )
+        args = [
+            "mpv", "--idle=yes", "--no-video", "--no-terminal",
+            f"--input-ipc-server={self.socket_path}",
+            f"--volume={self.volume}",
+        ]
+        # mpv resolves YouTube URLs via yt-dlp; point it at the venv's yt-dlp so
+        # it uses the same (auto-updated) binary instead of relying on PATH.
+        ytdl = os.path.join(sys.prefix, "bin", "yt-dlp")
+        if os.path.exists(ytdl):
+            args.append(f"--script-opts=ytdl_hook-ytdl_path={ytdl}")
+        self._proc = subprocess.Popen(args)
         for _ in range(50):  # wait up to 5s for the socket
             try:
                 self._command(["get_property", "idle-active"])

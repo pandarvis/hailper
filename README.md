@@ -63,8 +63,10 @@ On tape ensuite les commandes au clavier (par exemple : `Mets de la musique des 
 ### 1. Dépendances système
 
 ```bash
-sudo apt install mpv piper alsa-utils
+sudo apt install mpv alsa-utils
 ```
+
+(Piper TTS n'est **pas** installé via `apt` : il vient avec les dépendances Python du projet — paquet `piper-tts` — installé à l'étape 3. Seul le modèle de voix se télécharge à part, voir ci-dessous.)
 
 ### 2. Voix Piper française
 
