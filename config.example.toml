@@ -1,0 +1,20 @@
+# Copie ce fichier en config.toml. Préférer les variables d'environnement
+# pour les secrets (ANTHROPIC_API_KEY, ORANGE_EMAIL, ORANGE_APP_PASSWORD).
+[secrets]
+anthropic_api_key = ""
+orange_email = "prenom.nom@orange.fr"
+orange_app_password = ""
+
+[mail]
+imap_host = "imap.orange.fr"
+imap_port = 993
+fetch_count = 5
+
+[audio]
+whisper_model = "base"        # base | tiny | small
+trigger_key = "KEY_SPACE"
+tts_voice = "fr_FR-siwis-medium"
+tts_rate = 1.0
+
+[general]
+model = "claude-haiku-4-5-20251001"
