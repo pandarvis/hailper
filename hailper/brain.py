@@ -4,12 +4,17 @@ from .models import Email
 
 SYSTEM_PROMPT = (
     "Tu es l'assistant vocal d'une personne âgée, malvoyante et malentendante. "
-    "Tu l'aides à écouter de la musique sur YouTube, à gérer ses favoris, et à "
-    "écouter le résumé de ses mails. Réponds TOUJOURS en français, en phrases "
-    "très courtes et simples, car tes réponses seront lues à voix haute. "
-    "Utilise les outils pour agir. N'invente jamais le contenu d'un mail : "
-    "utilise les outils de mail. Si une demande n'est pas claire, demande "
-    "gentiment de répéter."
+    "Tu l'aides à écouter de la musique sur YouTube, à gérer ses favoris, à "
+    "écouter le résumé de ses mails, et à contrôler son ordinateur. Réponds "
+    "TOUJOURS en français, en phrases très courtes et simples, car tes réponses "
+    "seront lues à voix haute. Utilise les outils pour agir. N'invente jamais le "
+    "contenu d'un mail : utilise les outils de mail. "
+    "Pour le volume (« plus fort », « moins fort »), utilise system_volume : il "
+    "règle le volume général, donc ta voix aussi. "
+    "Pour éteindre ou redémarrer l'ordinateur, appelle power_control : cela "
+    "demande une confirmation. Quand il répond « oui » à une confirmation, "
+    "appelle confirm ; quand il répond « non », appelle cancel. "
+    "Si une demande n'est pas claire, demande gentiment de répéter."
 )
 
 
@@ -32,7 +37,7 @@ def build_tools() -> list[dict]:
                 "properties": {
                     "action": {
                         "type": "string",
-                        "enum": ["pause", "resume", "stop", "next", "volume_up", "volume_down"],
+                        "enum": ["pause", "resume", "stop", "next"],
                     }
                 },
                 "required": ["action"],
@@ -63,6 +68,37 @@ def build_tools() -> list[dict]:
                 "required": ["index"],
             },
         },
+        {
+            "name": "get_datetime",
+            "description": "Donner l'heure et la date actuelles.",
+            "input_schema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "system_volume",
+            "description": "Monter ou baisser le volume général (musique ET voix).",
+            "input_schema": {
+                "type": "object",
+                "properties": {"action": {"type": "string", "enum": ["up", "down"]}},
+                "required": ["action"],
+            },
+        },
+        {
+            "name": "power_control",
+            "description": "Éteindre ou redémarrer l'ordinateur. Demande TOUJOURS confirmation.",
+            "input_schema": {
+                "type": "object",
+                "properties": {"action": {"type": "string", "enum": ["shutdown", "reboot"]}},
+                "required": ["action"],
+            },
+        },
+        {"name": "confirm", "description": "Confirmer l'action en attente (quand il dit oui).",
+         "input_schema": {"type": "object", "properties": {}}},
+        {"name": "cancel", "description": "Annuler l'action en attente (quand il dit non).",
+         "input_schema": {"type": "object", "properties": {}}},
+        {"name": "restart_assistant", "description": "Redémarrer l'assistant vocal lui-même.",
+         "input_schema": {"type": "object", "properties": {}}},
+        {"name": "get_weather", "description": "Donner la météo.",
+         "input_schema": {"type": "object", "properties": {}}},
         {"name": "say", "description": "Répondre simplement à voix haute (aide, confirmation).",
          "input_schema": {"type": "object", "properties": {"text": {"type": "string"}},
                           "required": ["text"]}},

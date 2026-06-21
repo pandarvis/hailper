@@ -34,8 +34,9 @@ def run_once(trigger, recognizer, brain, speaker) -> None:
 def build_components(cfg, text_mode: bool):
     import anthropic
 
-    from .actions import Actions
+    from .actions import Actions, Toolbox
     from .brain import Brain, summarize_emails
+    from .system import SystemControl
     from .favorites import FavoritesStore
     from .mail import MailReader
 
@@ -64,7 +65,9 @@ def build_components(cfg, text_mode: bool):
         speaker = PiperSpeaker(cfg.tts_voice, cfg.tts_rate)
 
     actions = Actions(player, favorites, mail_reader, summarize, fetch_count=cfg.mail_fetch_count)
-    brain = Brain(client, actions, model=cfg.model)
+    system = SystemControl(weather_city=cfg.weather_city)
+    toolbox = Toolbox(actions, system)
+    brain = Brain(client, toolbox, model=cfg.model)
     return trigger, recognizer, brain, speaker
 
 
