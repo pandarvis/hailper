@@ -1,0 +1,16 @@
+[Unit]
+Description=Hailper voice assistant
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/hailper
+ExecStartPre=%h/hailper/deploy/update-ytdlp.sh
+ExecStart=%h/hailper/.venv/bin/python -m hailper.main --config %h/.hailper/config.toml
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target
