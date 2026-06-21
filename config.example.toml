@@ -12,9 +12,12 @@ fetch_count = 5
 
 [audio]
 whisper_model = "base"        # base | tiny | small
-trigger_key = "KEY_SPACE"
+trigger_key = "KEY_RIGHTCTRL"  # Ctrl droit : coin du clavier, jamais utilise, repérable au toucher
 tts_voice = "fr_FR-siwis-medium"
 tts_rate = 1.0
 
 [general]
 model = "claude-haiku-4-5-20251001"
+
+[weather]
+city = ""   # ville pour la météo, ex. "Lyon". Vide = détection automatique par IP.

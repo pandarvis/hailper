@@ -5,8 +5,6 @@ from typing import Callable, Optional
 from .favorites import FavoritesStore
 from .models import Email, Track
 
-VOLUME_STEP = 10
-
 
 class Actions:
     def __init__(
@@ -48,12 +46,6 @@ class Actions:
         if action == "next":
             track = self.player.next()
             return f"Suivant : {track.title}." if track else "Il n'y a pas de suivante."
-        if action == "volume_up":
-            self.player.set_volume(self.player.volume + VOLUME_STEP)
-            return "Plus fort."
-        if action == "volume_down":
-            self.player.set_volume(self.player.volume - VOLUME_STEP)
-            return "Moins fort."
         return "Je n'ai pas compris la commande de lecture."
 
     # --- favorites ---
@@ -101,3 +93,17 @@ class Actions:
         if match is None:
             return "Je n'ai pas ce mail. Demande d'abord le récap des mails."
         return f"Mail de {match.sender}, sujet : {match.subject}. {match.body}"
+
+
+class Toolbox:
+    """Aggregates several tool providers; the brain dispatches by method name."""
+
+    def __init__(self, *providers):
+        self._providers = providers
+
+    def __getattr__(self, name):
+        for provider in self._providers:
+            fn = getattr(provider, name, None)
+            if fn is not None:
+                return fn
+        raise AttributeError(name)
