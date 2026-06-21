@@ -21,14 +21,14 @@ class EvdevTrigger:
         self.key_name = key_name
         self._device = self._find_keyboard()
 
-    @staticmethod
-    def _find_keyboard():
+    def _find_keyboard(self):
         import evdev
 
+        target = getattr(evdev.ecodes, self.key_name)
         for path in evdev.list_devices():
             dev = evdev.InputDevice(path)
             caps = dev.capabilities()
-            if evdev.ecodes.EV_KEY in caps and evdev.ecodes.KEY_SPACE in caps[evdev.ecodes.EV_KEY]:
+            if evdev.ecodes.EV_KEY in caps and target in caps[evdev.ecodes.EV_KEY]:
                 return dev
         raise RuntimeError("Aucun clavier trouvé pour le déclencheur.")
 

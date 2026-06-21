@@ -93,9 +93,29 @@ class Brain:
         self.client = client
         self.actions = actions
         self.model = model
-        self.system = [{"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}]
+        # Le system prompt et les outils ne pèsent que quelques centaines de
+        # tokens, bien en dessous du seuil de cache de 4096 tokens : le prompt
+        # caching ne s'appliquerait pas. On garde donc un simple string.
+        self.system = system_prompt
         self.tools = build_tools()
         self.history: list[dict] = []
+
+    MAX_HISTORY = 16
+
+    def _trim_history(self) -> None:
+        # Le spec demande un contexte conversationnel court. On borne
+        # l'historique en gardant la fin, mais en redémarrant sur un vrai tour
+        # utilisateur (pas un tool_result) pour que la structure de messages
+        # reste valide pour l'API.
+        if len(self.history) <= self.MAX_HISTORY:
+            return
+        start = len(self.history) - self.MAX_HISTORY
+        while start < len(self.history):
+            msg = self.history[start]
+            if msg["role"] == "user" and isinstance(msg["content"], str):
+                break
+            start += 1
+        self.history = self.history[start:]
 
     def handle(self, user_text: str) -> str:
         self.history.append({"role": "user", "content": user_text})
@@ -109,9 +129,11 @@ class Brain:
             )
             self.history.append({"role": "assistant", "content": resp.content})
             if resp.stop_reason != "tool_use":
-                return "".join(
+                reply = "".join(
                     b.text for b in resp.content if getattr(b, "type", None) == "text"
                 ).strip()
+                self._trim_history()
+                return reply
             tool_results = []
             for block in resp.content:
                 if getattr(block, "type", None) == "tool_use":

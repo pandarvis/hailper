@@ -60,3 +60,15 @@ def test_tools_have_required_names():
     assert {"play_music", "control_playback", "add_favorite", "remove_favorite",
             "list_favorites", "play_favorites", "read_recent_emails",
             "read_email_full", "say"} <= names
+
+def test_history_is_bounded():
+    # The client always answers with a direct text turn.
+    responses = [SimpleNamespace(stop_reason="end_turn", content=[block_text("ok")])
+                 for _ in range(40)]
+    brain = Brain(FakeClient(responses), SpyActions(), model="m")
+    for i in range(20):
+        brain.handle(f"message {i}")
+    assert len(brain.history) <= Brain.MAX_HISTORY
+    # Must start on a real user turn (string content), not a tool_result.
+    assert brain.history[0]["role"] == "user"
+    assert isinstance(brain.history[0]["content"], str)

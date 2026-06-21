@@ -24,6 +24,10 @@ class Actions:
         self.fetch_count = fetch_count
         self._last_emails: list[Email] = []
 
+    # --- voix ---
+    def say(self, text: str) -> str:
+        return text
+
     # --- music ---
     def play_music(self, query: str) -> str:
         track = self.player.play(query)

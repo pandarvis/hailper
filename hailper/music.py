@@ -21,9 +21,12 @@ def search_youtube(query: str) -> Optional[Track]:
     if not entries:
         return None
     entry = entries[0]
+    video_id = entry.get("id")
+    if not video_id:
+        return None
     return Track(
         title=entry.get("title", query),
-        video_id=entry["id"],
+        video_id=video_id,
         added_at=datetime.now().isoformat(timespec="seconds"),
     )
 
@@ -107,9 +110,9 @@ class MpvPlayer:
 
     def _command(self, cmd: list) -> dict:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+            s.settimeout(2.0)  # borne connect/sendall/recv : ne jamais bloquer la boucle
             s.connect(self.socket_path)
             s.sendall((json.dumps({"command": cmd}) + "\n").encode("utf-8"))
-            s.settimeout(2.0)
             return json.loads(s.recv(65536).decode("utf-8").splitlines()[0])
 
     def _load(self, track: Track) -> None:

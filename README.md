@@ -70,9 +70,10 @@ sudo apt install mpv piper alsa-utils
 
 Télécharger le modèle `fr_FR-siwis-medium` (fichiers `.onnx` et `.onnx.json`) depuis le dépôt Hugging Face **rhasspy/piper-voices**, puis les placer dans un dossier de votre choix, par exemple `~/.local/share/piper-voices/`.
 
-Dans `~/.hailper/config.toml`, renseigner le chemin complet vers le fichier `.onnx` :
+Dans `~/.hailper/config.toml`, sous la section `[audio]`, renseigner le chemin complet vers le fichier `.onnx` :
 
 ```toml
+[audio]
 tts_voice = "/home/VotreNom/.local/share/piper-voices/fr_FR-siwis-medium.onnx"
 ```
 
@@ -94,12 +95,12 @@ mkdir -p ~/.hailper
 cp ~/hailper/config.example.toml ~/.hailper/config.toml
 ```
 
-Éditer `~/.hailper/config.toml` et renseigner au minimum :
+Éditer `~/.hailper/config.toml` et renseigner au minimum (en respectant les sections du fichier) :
 
-- `anthropic_api_key` : votre clé API Anthropic.
-- `email_address` : votre adresse Orange (`prenom.nom@orange.fr`).
-- `email_password` : le **mot de passe pour applications** Orange (à générer depuis l'espace client Orange — différent du mot de passe de connexion habituel). Serveur IMAP : `imap.orange.fr:993`.
-- `tts_voice` : chemin vers le fichier `.onnx` Piper (voir étape 2).
+- `anthropic_api_key` (section `[secrets]`) : votre clé API Anthropic.
+- `orange_email` (section `[secrets]`) : votre adresse Orange (`prenom.nom@orange.fr`).
+- `orange_app_password` (section `[secrets]`) : le **mot de passe pour applications** Orange (à générer depuis l'espace client Orange — différent du mot de passe de connexion habituel). Serveur IMAP : `imap.orange.fr:993` (déjà renseigné dans la section `[mail]`).
+- `tts_voice` (section `[audio]`) : chemin vers le fichier `.onnx` Piper (voir étape 2).
 
 ### 5. Accès à la touche Espace (groupe `input`)
 
@@ -143,7 +144,7 @@ Exemples de commandes que l'on peut prononcer après avoir appuyé sur la touche
 |---|---|
 | « Mets de la musique des années 2000 » | Lance une recherche YouTube et joue le résultat |
 | « Ajoute ça à mes favoris » | Enregistre la chanson en cours dans les favoris |
-| « Mets mes favoris » | Lit la liste des favoris en lecture aléatoire |
+| « Mets mes favoris » | Joue les favoris dans l'ordre où ils ont été ajoutés |
 | « Plus fort » | Augmente le volume |
 | « Moins fort » | Diminue le volume |
 | « Pause » | Met la lecture en pause (ou la reprend) |

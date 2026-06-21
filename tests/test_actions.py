@@ -16,6 +16,10 @@ def build(tmp_path, search_result=None, emails=None):
     summarize = lambda items: f"Tu as {len(items)} mails."
     return Actions(player, favorites, mail, summarize, fetch_count=5), player, favorites
 
+def test_say_returns_text(tmp_path):
+    actions, _, _ = build(tmp_path)
+    assert actions.say(text="Bonjour") == "Bonjour"
+
 def test_play_music_found(tmp_path):
     actions, _, _ = build(tmp_path, search_result=Track("Brel", "v1"))
     assert "Brel" in actions.play_music(query="brel")
