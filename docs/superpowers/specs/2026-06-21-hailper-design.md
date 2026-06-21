@@ -66,10 +66,11 @@ responsabilité unique et une interface claire.
 
 1. **Déclencheur (`trigger`)** — détecte l'appui sur un **bouton physique** et
    lance un cycle d'écoute (joue un *bip* « j'écoute »).
-   - v1 par défaut : une **touche clavier dédiée** capturée globalement via
-     `evdev` (Linux). La touche est **configurable**. Un bouton USB ou une
-     télécommande peut être substitué plus tard **sans changer le code**, car
-     l'entrée est abstraite derrière une interface.
+   - v1 par défaut : la **touche Espace** (grande, facile à trouver au toucher),
+     capturée globalement via `evdev` (Linux). La machine étant dédiée au bot,
+     monopoliser Espace ne pose pas de problème. La touche reste **configurable**.
+     Un bouton USB ou une télécommande peut être substitué plus tard **sans
+     changer le code**, car l'entrée est abstraite derrière une interface.
 
 2. **Reconnaissance vocale (`stt`)** — enregistre le micro jusqu'au silence
    (détection d'activité vocale) puis transcrit en texte français.
@@ -209,8 +210,12 @@ Ordre de grandeur réaliste : **quelques centimes par jour**.
 
 1. Une **clé API Anthropic**.
 2. Le **« mot de passe pour applications »** Orange + accès IMAP activé.
-3. Le choix du **bouton physique** (touche clavier dédiée par défaut).
-4. Un **bon micro** + **haut-parleurs puissants** (il entend mal).
+3. Déclencheur : **touche Espace** par défaut (aucun matériel supplémentaire).
+4. Sortie audio : **haut-parleurs externes** (déjà présents — bien, il entend mal).
+5. Entrée audio : **micro intégré du portable** en v1. ⚠️ Fortement recommandé :
+   un **micro USB (~15 €) ou un casque-micro** posé près de lui — le micro
+   interne est lointain et dégrade nettement la reconnaissance d'une voix âgée
+   et douce. Amélioration conseillée, non bloquante.
 
 ## 12. Risques et parades
 
@@ -219,4 +224,20 @@ Ordre de grandeur réaliste : **quelques centimes par jour**.
   l'architecture remplaçable autorise un passage cloud ultérieur si besoin.
 - **Précision reco / voix âgée en français** → à tester sur la machine cible ;
   leviers `tiny`/`base` puis cloud.
+- **Micro intégré (qualité d'entrée)** → principal risque UX ; parade : micro
+  USB / casque-micro recommandé (cf. prérequis).
 - **Friction config IMAP Orange** → documentée dans les prérequis.
+
+## 13. Développement et validation
+
+Le développement se fera sur une **autre machine que la cible** (matériel et
+OS différents). Conséquence sur la conception :
+
+- Le **mode texte** (§8) permet de développer/tester le cerveau, la musique et
+  les mails sans micro ni Linux.
+- Les briques **spécifiques Linux** (capture Espace via `evdev`, `mpv`, `piper`,
+  lecture audio) sont **isolées derrière des interfaces** et ne seront validées
+  de bout en bout qu'**au déploiement sur le Lenovo V110**.
+- Les tests sur la machine de développement **ne reflètent pas** la latence ni
+  la qualité audio réelles : une **phase de réglage sur la machine cible** est
+  prévue (modèle Whisper, volume/débit de la voix, seuils de silence du micro).
