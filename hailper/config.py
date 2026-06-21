@@ -19,6 +19,7 @@ class Config:
     tts_voice: str = "fr_FR-siwis-medium"
     tts_rate: float = 1.0
     model: str = "claude-haiku-4-5-20251001"
+    weather_city: str = ""
 
     @classmethod
     def load(cls, path: str | Path) -> "Config":
@@ -31,6 +32,7 @@ class Config:
         mail = data.get("mail", {})
         audio = data.get("audio", {})
         general = data.get("general", {})
+        weather = data.get("weather", {})
 
         def pick(env_key: str, value: str) -> str:
             return os.environ.get(env_key, value)
@@ -47,4 +49,5 @@ class Config:
             tts_voice=audio.get("tts_voice", "fr_FR-siwis-medium"),
             tts_rate=float(audio.get("tts_rate", 1.0)),
             model=general.get("model", "claude-haiku-4-5-20251001"),
+            weather_city=weather.get("city", ""),
         )

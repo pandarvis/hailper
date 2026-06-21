@@ -48,8 +48,7 @@ def test_control_playback_actions(tmp_path):
     actions.play_music(query="brel")
     assert "pause" in actions.control_playback(action="pause").lower()
     assert player.paused is True
-    actions.control_playback(action="volume_up")
-    assert player.volume == 110
+    assert "arrête" in actions.control_playback(action="stop").lower()
 
 def test_read_recent_emails(tmp_path):
     emails = [Email(1, "EDF", "Facture", "2026-06-20", "corps")]
@@ -63,3 +62,20 @@ def test_read_email_full_requires_prior_list(tmp_path):
     out = actions.read_email_full(index=1)
     assert "Le corps complet" in out
     assert "EDF" in out
+
+def test_toolbox_dispatches_across_providers():
+    from hailper.actions import Toolbox
+    class A:
+        def foo(self):
+            return "a-foo"
+    class B:
+        def bar(self):
+            return "b-bar"
+    class C:
+        def foo(self):
+            return "c-foo"
+    tb = Toolbox(A(), B())
+    assert tb.foo() == "a-foo"
+    assert tb.bar() == "b-bar"
+    assert getattr(tb, "nope", None) is None  # unknown -> None for the brain
+    assert Toolbox(A(), C()).foo() == "a-foo"  # first provider wins on collision
