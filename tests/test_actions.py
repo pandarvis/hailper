@@ -71,7 +71,11 @@ def test_toolbox_dispatches_across_providers():
     class B:
         def bar(self):
             return "b-bar"
+    class C:
+        def foo(self):
+            return "c-foo"
     tb = Toolbox(A(), B())
     assert tb.foo() == "a-foo"
     assert tb.bar() == "b-bar"
     assert getattr(tb, "nope", None) is None  # unknown -> None for the brain
+    assert Toolbox(A(), C()).foo() == "a-foo"  # first provider wins on collision

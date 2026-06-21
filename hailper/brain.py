@@ -14,6 +14,9 @@ SYSTEM_PROMPT = (
     "Pour éteindre ou redémarrer l'ordinateur, appelle power_control : cela "
     "demande une confirmation. Quand il répond « oui » à une confirmation, "
     "appelle confirm ; quand il répond « non », appelle cancel. "
+    "« Redémarre l'ordinateur » utilise power_control ; « redémarre "
+    "l'assistant » utilise restart_assistant : ne les confonds pas. "
+    "Tu peux aussi donner l'heure, la date et la météo. "
     "Si une demande n'est pas claire, demande gentiment de répéter."
 )
 

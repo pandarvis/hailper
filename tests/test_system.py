@@ -30,6 +30,15 @@ def test_reboot_confirmation():
     s.confirm()
     assert run.calls[0][0][0] == ["systemctl", "reboot"]
 
+def test_pending_confirmation_expires():
+    run = Spy()
+    times = [datetime(2026, 6, 21, 10, 0, 0), datetime(2026, 6, 21, 10, 1, 0)]  # +60s
+    s = SystemControl(runner=run, clock=lambda: times.pop(0))
+    s.power_control("shutdown")
+    msg = s.confirm()
+    assert run.calls == []  # confirmation expired -> nothing executed
+    assert "sécurité" in msg.lower()
+
 def test_confirm_without_pending_is_safe():
     run = Spy()
     s = SystemControl(runner=run)

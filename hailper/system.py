@@ -10,6 +10,10 @@ MOIS = [
     "juillet", "août", "septembre", "octobre", "novembre", "décembre",
 ]
 
+# Une confirmation d'action destructrice (extinction/redémarrage) expire après
+# ce délai, pour qu'un « oui » sans rapport prononcé plus tard ne déclenche rien.
+PENDING_TTL_SECONDS = 30
+
 
 def _default_fetch_weather(city: str) -> str:
     import urllib.parse
@@ -41,6 +45,7 @@ class SystemControl:
         self._spawn = spawner
         self._fetch_weather = fetch_weather or _default_fetch_weather
         self._pending: Optional[str] = None  # "shutdown" | "reboot"
+        self._pending_at: Optional[datetime] = None
 
     def get_datetime(self) -> str:
         now = self._clock()
@@ -54,14 +59,21 @@ class SystemControl:
         if action not in ("shutdown", "reboot"):
             return "Je ne sais pas faire ça."
         self._pending = action
+        self._pending_at = self._clock()
         verbe = "éteindre" if action == "shutdown" else "redémarrer"
         return f"Veux-tu vraiment {verbe} l'ordinateur ? Dis oui pour confirmer."
 
     def confirm(self) -> str:
         if self._pending is None:
             return "Il n'y a rien à confirmer."
+        elapsed = (self._clock() - self._pending_at).total_seconds()
+        if elapsed > PENDING_TTL_SECONDS:
+            self._pending = None
+            self._pending_at = None
+            return "C'est trop tard, j'annule par sécurité. Redemande si besoin."
         action = self._pending
         self._pending = None
+        self._pending_at = None
         cmd = ["systemctl", "poweroff"] if action == "shutdown" else ["systemctl", "reboot"]
         self._run(cmd, check=False)
         return "D'accord, j'éteins." if action == "shutdown" else "D'accord, je redémarre."
@@ -70,6 +82,7 @@ class SystemControl:
         if self._pending is None:
             return "Il n'y a rien à annuler."
         self._pending = None
+        self._pending_at = None
         return "D'accord, j'annule."
 
     def system_volume(self, action: str) -> str:
@@ -84,7 +97,7 @@ class SystemControl:
     def restart_assistant(self) -> str:
         # Speak first, then restart shortly after (detached so it survives our exit).
         self._spawn(
-            ["bash", "-c", "sleep 2 && systemctl --user restart hailper"],
+            ["bash", "-c", "sleep 5 && systemctl --user restart hailper"],
             start_new_session=True,
         )
         return "Je redémarre, un instant."
